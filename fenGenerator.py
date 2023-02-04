@@ -70,20 +70,21 @@ def add_pieces_to_board(arr, material):
     # Add pieces to the board until remaining material is 0 for both sides
     while material["black"] + material["white"] != 0:
         if(material["white"] > 0):
-            availablePieces = available_pieces(materialValue, material["white"])
-            availablePiecesWeighted = dict((k, piecesWeight[k]) for k in availablePieces)
-            piece = random.choices(list(availablePiecesWeighted.keys()), list(availablePiecesWeighted.values()))[0].upper()
-            position = generate_position(arr, piece)
-            arr[position[0]][position[1]] = piece
-            material["white"] -= materialValue[piece]
+            add_piece(arr, material, "white")
         if(material["black"] > 0):
-            availablePieces = available_pieces(materialValue, material["black"])
-            availablePiecesWeighted = dict((k, piecesWeight[k]) for k in availablePieces)
-            piece = random.choices(list(availablePiecesWeighted.keys()), list(availablePiecesWeighted.values()))[0].lower()
-            position = generate_position(arr, piece)
-            arr[position[0]][position[1]] = piece
-            material["black"] -= materialValue[piece]
+            add_piece(arr, material, "black")
     return arr
+
+# Add single piece to board
+def add_piece(arr, material, color):
+    availablePieces = available_pieces(materialValue, material[color])
+    availablePiecesWeighted = dict((k, piecesWeight[k]) for k in availablePieces)
+    piece = random.choices(list(availablePiecesWeighted.keys()), list(availablePiecesWeighted.values()))[0]
+    if color == "white": piece = piece.upper()
+    else: piece = piece.lower()
+    position = generate_position(arr, piece)
+    arr[position[0]][position[1]] = piece
+    material[color] -= materialValue[piece]
 
 # Get all pieces whose material value is less than the reamining material debt of that player
 def available_pieces(dict, val) :
