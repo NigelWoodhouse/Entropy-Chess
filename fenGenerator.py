@@ -47,8 +47,8 @@ def create_material_debt(display=False):
     # Create Normal distribution for the amount of material each player gets
     mu, sigma = 20, 2
     s = np.random.normal(mu, sigma, 2)
-    material["black"] = math.ceil(s[0])
-    material["white"] = math.ceil(s[1])
+    material["black"] = abs(math.ceil(s[0]))
+    material["white"] = abs(math.ceil(s[1]))
     print("Material White: " + str(material["white"]))
     print("Material Black: " + str(material["black"]))
     
@@ -73,14 +73,14 @@ def add_pieces_to_board(arr, material):
             availablePieces = available_pieces(materialValue, material["white"])
             availablePiecesWeighted = dict((k, piecesWeight[k]) for k in availablePieces)
             piece = random.choices(list(availablePiecesWeighted.keys()), list(availablePiecesWeighted.values()))[0].upper()
-            position = generate_white_position(arr, piece)
+            position = generate_position(arr, piece)
             arr[position[0]][position[1]] = piece
             material["white"] -= materialValue[piece]
         if(material["black"] > 0):
             availablePieces = available_pieces(materialValue, material["black"])
             availablePiecesWeighted = dict((k, piecesWeight[k]) for k in availablePieces)
             piece = random.choices(list(availablePiecesWeighted.keys()), list(availablePiecesWeighted.values()))[0].lower()
-            position = generate_black_position(arr, piece)
+            position = generate_position(arr, piece)
             arr[position[0]][position[1]] = piece
             material["black"] -= materialValue[piece]
     return arr
@@ -126,42 +126,36 @@ def check_nearby_for_white_king(arr, x, y):
                 pass
     return True
 
-def generate_white_position(arr, piece):
-    row_weights = piece_position_weights(piece)
-    column = random.randrange(0,8)
-    row = random.choices(range(8), row_weights)[0]
-    while arr[row][column] != "1":
-        row = random.choices(range(8), row_weights)[0]
+def generate_position(arr, piece):
+    default = ""
+    while default != "1":
+        row_weights = piece_position_weights(piece)
         column = random.randrange(0,8)
-    return row, column
-
-def generate_black_position(arr, piece):
-    row_weights = piece_position_weights(piece)
-    column = random.randrange(0,8)
-    row = random.choices(range(8), row_weights)[0]
-    while arr[row][column] != "1":
         row = random.choices(range(8), row_weights)[0]
-        column = random.randrange(0,8)
+        default = arr[row][column]
     return row, column
 
 # Add kings to board
 # Add White king first. Add black king second and make sure it is not adjacent.
 def add_king(arr):
-    white_king_pos = generate_white_position(arr, piece = "K")
+    white_king_pos = generate_position(arr, piece = "K")
     arr[white_king_pos[0]][white_king_pos[1]] = "K"
-    black_king_pos = generate_black_position(arr, piece = "k")
+    black_king_pos = generate_position(arr, piece = "k")
     while check_nearby_for_white_king(arr, black_king_pos[0], black_king_pos[1]) == False:
-        black_king_pos = generate_black_position(arr, piece = "k")
+        black_king_pos = generate_position(arr, piece = "k")
     arr[black_king_pos[0]][black_king_pos[1]] = "k"
 
 # Randomly determine side to start
-def turn_selection():
-    if random.random() < 0.5 : return " w"
+def turn_selection(material):
+    if material["black"] == 0: return " b"
+    threshold = (material["white"]/material["black"])/2
+    if random.random() > threshold : return " w"
     else : return " b"
 
 # Check if castling is available
 def castling(arr):
     castling = ""
+    # Check white position
     if ("K" in arr[-1] and "R" in arr[-1]):
         first_rank_string = ""
         for i in arr[-1]:
@@ -172,6 +166,7 @@ def castling(arr):
         if ("RK") in first_rank_string:
             castling += "Q"
 
+    # Check black position
     if ("k" in arr[0] and "r" in arr[0]):
         back_rank_string = ""
         for i in arr[0]:
@@ -205,6 +200,9 @@ def generate_lichess_link(str, open=False):
 def main():
     # Create amount of material per side
     material = create_material_debt()
+    #
+    turn = turn_selection(material)
+
     # Generate blank board
     board = create_grid()
     # Add piece to board
@@ -213,7 +211,7 @@ def main():
     # Convert 2D board array to string 
     fen_string = generate_FEN(board)
     # Add turn to FEN string
-    fen_string += turn_selection()
+    fen_string += turn
     # Add castling to FEN string
     fen_string += castling(board)
 
