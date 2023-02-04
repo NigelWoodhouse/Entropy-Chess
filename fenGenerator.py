@@ -160,16 +160,28 @@ def turn_selection():
     else : return " b"
 
 # Check if castling is available
-def castling(str):
+def castling(arr):
     castling = ""
-    if str[-1] == "R" and str [-4] == "K":
-        castling += "K"
-    if  str[-8] == "R" and str [-4] == "K":
-        castling += "Q"
-    if str[0] == "r" and str [4] == "k":
-        castling += "K"
-    if  str[7] == "r" and str [4] == "k":
-        castling += "q"     
+    if ("K" in arr[-1] and "R" in arr[-1]):
+        first_rank_string = ""
+        for i in arr[-1]:
+            if i == "K" or i == "R":
+                first_rank_string += i
+        if ("KR") in first_rank_string:
+            castling += "K"
+        if ("RK") in first_rank_string:
+            castling += "Q"
+
+    if ("k" in arr[0] and "r" in arr[0]):
+        back_rank_string = ""
+        for i in arr[0]:
+            if i == "k" or i == "r":
+                back_rank_string += i
+        if ("kr") in back_rank_string:
+            castling += "k"
+        if ("rk") in back_rank_string:
+            castling += "q"
+
     if castling != "" : return " " + castling
     return castling 
 
@@ -203,7 +215,7 @@ def main():
     # Add turn to FEN string
     fen_string += turn_selection()
     # Add castling to FEN string
-    fen_string += castling(fen_string)
+    fen_string += castling(board)
 
     # Produce FEN string and LiChess link
     print(fen_string)
