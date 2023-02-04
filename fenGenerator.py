@@ -34,15 +34,17 @@ material = {
     "white" : 0,
 }
 
-def createGrid():
-    arr = [["1" for x in range(8)] for y in range(8)] 
+def create_grid():
+    arr = [["1" for _ in range(8)] for _ in range(8)] 
     return(arr)
 
-def createMaterialDebt(materialDebt):
-    mu, sigma = 30, 2
+def create_material_debt(materialDebt):
+    mu, sigma = 20, 2
     s = np.random.normal(mu, sigma, 2)
     materialDebt["black"] = math.ceil(s[0])
     materialDebt["white"] = math.ceil(s[1])
+    print("Material White: " + str(materialDebt["white"]))
+    print("Material Black: " + str(materialDebt["black"]))
         
     # count, bins, ignored = plt.hist(s, 30, density=True)
     # plt.plot(bins, 1/(sigma * np.sqrt(2 * np.pi)) *
@@ -53,37 +55,39 @@ def createMaterialDebt(materialDebt):
     return materialDebt
 
 
-def AddPiecesToBoard(arr, materialDebt):
-    addKing(arr)
-    while materialDebt["black"] != 0 and materialDebt["white"] != 0:
+def add_pieces_to_board(arr, materialDebt):
+    add_king(arr)
+    while materialDebt["black"] + materialDebt["white"] != 0:
         if(materialDebt["white"] > 0):
-            availPieces = availablePieces(materialValue, materialDebt["white"])
+            availPieces = available_pieces(materialValue, materialDebt["white"])
             availPiecesWeighted = dict((k, piecesWeight[k]) for k in availPieces)
             piece = random.choices(list(availPiecesWeighted.keys()), list(availPiecesWeighted.values()))[0].upper()
-            position = (generatePosition(arr), generatePawnPosition(arr))[piece == "P"]
+            position = generate_white_position(arr, piece)
             arr[position[0]][position[1]] = piece
             materialDebt["white"] -= materialValue[piece]
         if(materialDebt["black"] > 0):
-            availPieces = availablePieces(materialValue, materialDebt["black"])
+            availPieces = available_pieces(materialValue, materialDebt["black"])
             availPiecesWeighted = dict((k, piecesWeight[k]) for k in availPieces)
             piece = random.choices(list(availPiecesWeighted.keys()), list(availPiecesWeighted.values()))[0].lower()
-            position = (generatePosition(arr), generatePawnPosition(arr))[piece == "p"]
+            position = generate_black_position(arr, piece)
             arr[position[0]][position[1]] = piece
             materialDebt["black"] -= materialValue[piece]
     return arr
 
-def availablePieces(dict, val) :
+def available_pieces(dict, val) :
     return [i for i in dict if dict[i] <= val]
 
-def generatePawnPosition(arr):
-    row = random.randrange(1,7)
-    column = random.randrange(0,8)
-    while arr[row][column] != "1":
-        row = random.randrange(1,7)
-        column = random.randrange(0,8)
-    return row, column
+def piece_position_weights(piece = ''):
+    weights = []
+    for x in range(0, 8):
+        weights.append(((x/3)**2) + 1)
+    if piece.upper() == "P":
+        weights[0] = 0
+        weights[-1] = 0
+    if piece.isupper(): return weights
+    else: return weights[::-1]    
 
-def checkNearbyForWhiteKing(arr, x, y):
+def check_nearby_for_white_king(arr, x, y):
     for dx in range(3):
         for dy in range(3):
             try:
@@ -94,23 +98,33 @@ def checkNearbyForWhiteKing(arr, x, y):
                 pass
     return True
 
-def generatePosition(arr):
-    row = random.randrange(0,8)
+def generate_white_position(arr, piece):
+    row_weights = piece_position_weights(piece)
     column = random.randrange(0,8)
+    row = random.choices(range(8), row_weights)[0]
     while arr[row][column] != "1":
-        row = random.randrange(0,8)
+        row = random.choices(range(8), row_weights)[0]
         column = random.randrange(0,8)
     return row, column
 
-def addKing(arr):
-    white_king_pos = generatePosition(arr)
+def generate_black_position(arr, piece):
+    row_weights = piece_position_weights(piece)
+    column = random.randrange(0,8)
+    row = random.choices(range(8), row_weights)[0]
+    while arr[row][column] != "1":
+        row = random.choices(range(8), row_weights)[0]
+        column = random.randrange(0,8)
+    return row, column
+
+def add_king(arr):
+    white_king_pos = generate_white_position(arr, piece = "K")
     arr[white_king_pos[0]][white_king_pos[1]] = "K"
-    black_king_pos = generatePosition(arr)
-    while checkNearbyForWhiteKing(arr, black_king_pos[0], black_king_pos[1]) == False:
-        black_king_pos = generatePosition(arr)
+    black_king_pos = generate_black_position(arr, piece = "k")
+    while check_nearby_for_white_king(arr, black_king_pos[0], black_king_pos[1]) == False:
+        black_king_pos = generate_black_position(arr, piece = "k")
     arr[black_king_pos[0]][black_king_pos[1]] = "k"
 
-def turn():
+def turn_selection():
     if random.random() < 0.5 : return " w"
     else : return " b"
 
@@ -127,7 +141,7 @@ def castling(str):
     if castling != "" : return " " + castling
     return castling 
 
-def generateFEN(arr):
+def generate_FEN(arr):
     positionString = ""
     for row in range(len(arr[0])):
         for col in range(len(arr[1])):
@@ -136,18 +150,19 @@ def generateFEN(arr):
             positionString += "/"
     return positionString
 
-def generateLichessLink(str, open=False):
+def generate_lichess_link(str, open=False):
     str = "https://lichess.org/analysis/fromPosition/"+fen_string
     print(str.replace(' ', "_"))
-    return webbrowser.open(str)
+    if open :
+        return webbrowser.open(str)
 
-materialDebt = createMaterialDebt(material)
-board = createGrid()
-board = AddPiecesToBoard(board, materialDebt)
+materialDebt = create_material_debt(material)
+board = create_grid()
+board = add_pieces_to_board(board, materialDebt)
 
-fen_string = generateFEN(board)
-fen_string += turn()
+fen_string = generate_FEN(board)
+fen_string += turn_selection()
 fen_string += castling(fen_string)
 
 print(fen_string)
-generateLichessLink(fen_string, True)
+generate_lichess_link(fen_string, True)
