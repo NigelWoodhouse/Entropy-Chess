@@ -104,7 +104,7 @@ def piece_position_weights(piece = ''):
     weights = []
     # Encourage King to spawn on players side by changing division factor
     factor = (3, 1)[isKing(piece)]
-    for x in range(0, 8):
+    for x in range(8):
         # Parabolic distribution curve for placing pieces
         weights.append(((x/factor)**2) + 1)
     # Prevent pawns from generating on first and last rank
