@@ -9,7 +9,6 @@ body {
   height: 80vh;
   display: flex;
   justify-content: center;
-  align-items: center;
   color: white;
   font-family: sans-serif;
 }
@@ -20,11 +19,26 @@ h1 {
   margin-bottom: 35px;
 }
 
-.app-container {
+.slider-container {
   width: 600px;
   padding: 0 10px;
-  background-color: #272727;
-  padding: 30px 50px;
+  background-color: #434343;
+  padding: 10px 50px;
   border-radius: 10px;
   box-shadow: 0px 5px 5px rgba(0, 0, 0, 0.479);
+}
+
+.zero-eval-checkbox {
+  display: flex;
+  justify-content: center;
+}
+
+.zero-eval-checkbox {
+  display: flex;
+  justify-content: center;
+}
+
+.generate-position-button {
+  display: flex;
+  justify-content: center;
 }

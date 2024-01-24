@@ -1,0 +1,9 @@
+.board {
+    width: 300px;
+    position: relative;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin: auto;
+    /* background-color: red; */
+}
