@@ -293,7 +293,7 @@ def generate_lichess_link(str, open=False):
     if open :
         return webbrowser.open(lichessString)
 
-def main(whiteMaterial=39, blackMaterial=39, allowZeroEvaluation=True, allowForcedMate=True, engineEvaluationThreshold=10):
+def main(whiteMaterial=39, blackMaterial=39, allowZeroEvaluation=True, allowForcedMate=True, engineEvaluationThreshold=100):
     
     engineEvaluation = -1
     fen_string = ''
