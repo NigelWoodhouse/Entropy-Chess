@@ -1,0 +1,9 @@
+import math
+
+value = 3
+max = math.pi*(1 - 2**-15)
+min = -math.pi
+
+value = (math.pi - value)/(2*math.pi)
+
+print(value)

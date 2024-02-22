@@ -59,12 +59,12 @@ export default function EvaluationSlider({title, evaluationValueCallback, zeroEv
     <div className='zero-eval-checkbox'>
         <FormGroup className='zero-eval-checkbox'>
           <Tooltip title="Allowing 0 evaluation may produce a perpetual check position." placement="top">
-            <FormControlLabel control={<Checkbox onChange={checkHandlerZeroEvaluation} checked={true}/>} label="Allow 0 Evaluation" />
+            <FormControlLabel control={<Checkbox onChange={checkHandlerZeroEvaluation} checked={isCheckedZeroEvaluation}/>} label="Allow 0 Evaluation" />
           </Tooltip>
         </FormGroup>
         <FormGroup className='forced-mate-checkbox'>
           <Tooltip title="Allows a forced mate positions." placement="top">
-            <FormControlLabel control={<Checkbox onChange={checkHandlerForcedMate} checked={true}/>} label="Allow Forced Mate" />
+            <FormControlLabel control={<Checkbox onChange={checkHandlerForcedMate} checked={isCheckedForcedMate}/>} label="Allow Forced Mate" />
           </Tooltip>
         </FormGroup>
     </div>

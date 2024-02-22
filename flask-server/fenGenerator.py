@@ -252,38 +252,38 @@ def engineCheck(allowZeroEvaluation = True, allowForcedMate = True, engineEvalua
         print(fen_string)
         if not stockfish.is_fen_valid(fen_string):
             print('INVALID BOARD POSITION')
-            return -1
+            return {'failed', 0}
         engine = stockfish.get_evaluation()
     except:
         print('ISSUE WITH STOCKFISH')
-        return -1
+        return {'failed', 0}
     
     print(engine)
 
     # Forced Mate Conditions
     if allowForcedMate == True and engine['type'] == 'mate':
         print('Forced mate. Allowing forced mate.')
-        return abs(engine['value'])
+        return {'mate', engine['value']}
     
     if allowForcedMate == False and engine['type'] == 'mate':
         print('FAILED POSITION. Position is forced mate and we deny forced mate.')
-        return -1
+        return {'failed', 0}
 
     # Position is 0 eval but we do not want 0 eval
     if allowZeroEvaluation == False and engine['value'] == 0:
         print('FAILED POSITION. Position is 0 eval and we deny 0 eval.')
-        return -1
+        return {'failed', 0}
     
     if engine['type'] == 'cp' and abs(engine['value']/100) > engineEvaluationThreshold:
         print('FAILED POSITION. Engine eval is outside of desired range')
-        return -1
+        return {'failed', 0}
 
     if engine['type'] == 'cp' and abs(engine['value']/100) <= engineEvaluationThreshold:
         print('Valid position based on range')
-        return abs(stockfish.get_evaluation()['value']/100)
+        return {'cp',  abs(engine['value']/100)}
 
     print('UNCAUGHT CASE!')
-    return -1
+    return {'failed', 0}
 
 
 # Create a link to open board position in LiChess. Opens webpage automatically if open is set to True

@@ -16,13 +16,15 @@ def members():
         chess_data = request.get_json()
         blackMaterialValue = chess_data['blackMaterialValue']
         whiteMaterialValue = chess_data['whiteMaterialValue']
-        evaluationValue = chess_data['evaluationValue']
+        evaluationThresholdValue = chess_data['evaluationThresholdValue']
         zeroEvaluationValue = chess_data['zeroEvaluationValue']
         forcedMateValue = chess_data['forcedMateValue']
 
         print(chess_data)
         
-        return fenGenerator.main(whiteMaterialValue, blackMaterialValue, zeroEvaluationValue, forcedMateValue, evaluationValue)
+        chessPosition = fenGenerator.main(whiteMaterialValue, blackMaterialValue, zeroEvaluationValue, forcedMateValue, evaluationThresholdValue)
+
+        return chessPosition
 
 if __name__ == "__main__":
     app.run(debug = True)

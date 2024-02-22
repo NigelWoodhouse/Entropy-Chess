@@ -4,6 +4,7 @@ import './Popup.css'
 import { Button } from "@mui/material";
 import DisplayChessboard from "../components/Board/DisplayChessboard";
 
+
 function Popup(props){
     const displayFen = props.fenString
 
