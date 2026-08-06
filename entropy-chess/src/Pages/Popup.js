@@ -39,7 +39,19 @@ function Popup(props){
                     LiChess
                     </Button>
             </div>
+            
             }
+
+            {displayFen != 'start' &&   
+            <div>
+            <Button
+                    variant="contained" onClick={() =>  window.open("https://chess.com/practice")}>
+                    Chess.com
+                    </Button>
+            </div>
+            
+            }
+            
 
         </div>       
     ) : "";

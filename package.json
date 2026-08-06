@@ -2,5 +2,9 @@
   "dependencies": {
     "react-spinners": "^0.13.8",
     "react-toastify": "^10.0.4"
+  },
+  "options": {
+    "allowedHosts": ["localhost", ".localhost"],
+    "proxy": "https://localhost:3000/"
   }
 }
